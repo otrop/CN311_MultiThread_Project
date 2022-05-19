@@ -1,42 +1,29 @@
-from cgitb import handler
-from concurrent.futures import thread
-from http import server
+import random
 import socket
-import threading
 
-IP = socket.gethostbyname(socket,socket.gethostbyname())
-PORT = 5566
-ADDR = (IP, PORT)
-SIZE = 1024
+
+HOST = "127.0.0.1"  # The server's hostname or IP address
+PORT = 65432  # The port used by the server
+
 FORMAT = "utf-8"
 DISCONNECT_MSG = "!DISCONNECT"
 
-def handle_client(conn, addr):
-    print(f"[NEW CONNECTION] {addr} connected.")
-    connected = True
-    while connected:
-        msg = conn.recv(SIZE).decode(FORMAT)
-        if msg == DISCONNECT_MSG:
-            connected = False
+with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server:
+        server.bind((HOST, PORT))
+        server.listen()
+        conn, addr = server.accept()
+        print(f"Server is listening in {HOST} : {PORT}")
+        number_list = []
+        number_random = random.randint(1, 9)
+        number_random = str(number_random)
+        for i in range(4):
+            while True:
+                if number_random in number_list:
+                    number_random = random.randint(1, 9)
+                    number_random = str(number_random)
+                else:
+                    conn.sendall(number_random.encode())
+                    number_list.append(number_random)
+                    break
 
-        print(f"[{addr}] {msg}")
-        msg = f"MSG recieved: {msg}"
-        conn.send(msg.encode(FORMAT))
 
-    conn.close()
-
-def main():
-    print("Server id starting...")
-    server = socket.socke(socket.AF_INET, socket.SOCK_STREAM)
-    server.bind(ADDR)
-    server.listen()
-    print(f"Server is listening in {IP} : {PORT}")
-
-    while True:
-        conn ,addr = server.accept()
-        thread = threading.Thread(target=handle_client, args=(conn, addr))
-        thread.start()
-        print(f"[ACIVE CONNECTION] {threading.activeCount() - 1}")
-
-if __name__ == "__main__":
-    main()
