@@ -50,3 +50,6 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as server:
                 
             clientMessage = conn.recv(1024).decode()
             clientMessage = int(clientMessage)
+            if clientMessage == 4:
+                print("disconnected")
+                break

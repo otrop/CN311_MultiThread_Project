@@ -3,6 +3,7 @@ from cProfile import label
 from itertools import count
 import tkinter as tk
 import socket
+import time
 import threading
 
 LARGE_FONT_STYLE = ("Arial", 40,"bold")
@@ -22,6 +23,7 @@ DISCONNECT_MSG = "!DISCONNECT"
 button_list = []
 number_list = []
 count_round = 0
+endGame = 0
 
 class Display:
 	def __init__(self):
@@ -59,6 +61,7 @@ class Display:
 		self.create_clear_button()
 		self.create_equals_button()
 		self.create_reset_button()
+		self.create_endGame_button()
 
 	def create_display_labels(self):
 		point_label = tk.Label(self.display_frame, text="Point : "+self.point,
@@ -84,6 +87,10 @@ class Display:
 		print(self)
 		self.current_expression += str(value)
 		self.update_label()
+
+	def create_endGame_button(self):
+		button = tk.Button(self.buttons_frame, text="END GAME",bg=LIGHT_BLUE,fg=LABEL_COLOR,font=DEFUALT_FONT_STYLE,borderwidth=0,command=self.endGame)
+		button.grid(row=0,columnspan=5,sticky=tk.NSEW)
 
 	def create_digit_buttons(self):
 		for digit, grid_value in self.digits.items():
@@ -151,12 +158,12 @@ class Display:
 		self.total_expression += self.current_expression
 		self.update_total_label()
 		self.current_expression = str(eval(self.total_expression))
-		print("button list : ",len(button_list))
+		#print("button list : ",len(button_list)) for checking
 		if self.current_expression == "24" and len(button_list) == 0:
 			print("YOU WIN")
 			global count_round
 			count_round += 1
-			self.point.config(text = "Point : "+count_round)
+			self.point.config(text = count_round)
 			global number_lis
 			number_list.clear()
 			client.sendall(str(len(number_list)).encode())
@@ -186,6 +193,7 @@ class Display:
 		button.grid(row=4,column=3,columnspan=2,sticky=tk.NSEW)
 	
 	def resetGame(self):
+		print("-- reset --")
 		global number_list
 		number_list.clear()
 		client.sendall(str(len(number_list)).encode())
@@ -195,6 +203,17 @@ class Display:
 			print("num rev :", number_rev)
 		self.digits = {int(number_list[0]): (1, 1), int(number_list[1]): (1, 2), int(number_list[2]): (1, 3), int(number_list[3]): (1, 4)}
 		self.clear()
+
+	def endGame(self):
+		global endGame
+		endGame = 4
+		client.sendall(str(len(number_list)).encode())
+		print("SERVER DISCONNECTED")
+		self.current_expression = "GAME ENDED."
+		self.total_expression = "SERVER DISCONNECT"
+		self.update_label()
+		self.update_total_label()
+
 		
 	def update_total_label(self):
 		expression = self.total_expression
