@@ -26,7 +26,7 @@ count_round = 0
 class Display:
 	def __init__(self):
 		self.window = tk.Tk()
-		self.window.geometry("375x667") #Size for start
+		self.window.geometry("375x567") #Size for start
 		self.window.resizable(0,0) #Size_resizeable
 		self.window.title("24 GAME") #Title Tag in top
 
@@ -61,7 +61,7 @@ class Display:
 		self.create_reset_button()
 
 	def create_display_labels(self):
-		point_label = tk.Label(self.display_frame, text=self.point,
+		point_label = tk.Label(self.display_frame, text="Point : "+self.point,
 		 anchor=tk.W, bg=LIGHT_GRAY, fg=LABEL_COLOR, padx=24, font=SMALL_FONT_STYLE)
 		point_label.pack(expand=True, fill='both')
 
@@ -92,25 +92,25 @@ class Display:
 					fg=LABEL_COLOR, font=DIGITS_FONT_STYLE, borderwidth=0, command=lambda x = digit: [self.add_to_expression(x),button_list.remove(button_1),button_1.destroy()])
 					button_1.grid(row=grid_value[0], column=grid_value[1], sticky=tk.NSEW)
 					button_list.append(button_1)
-					print(len(button_list))
+					#print(len(button_list)) for checking
 				if(grid_value[1] == 2):
 					button_2 = tk.Button(self.buttons_frame, text=str(digit), bg="#FFFFFF",
 					fg=LABEL_COLOR, font=DIGITS_FONT_STYLE, borderwidth=0, command=lambda x = digit: [self.add_to_expression(x),button_list.remove(button_2),button_2.destroy()])
 					button_2.grid(row=grid_value[0], column=grid_value[1], sticky=tk.NSEW)
 					button_list.append(button_2)
-					print(len(button_list))
+					#print(len(button_list)) for checking
 				if(grid_value[1] == 3):
 					button_3 = tk.Button(self.buttons_frame, text=str(digit), bg="#FFFFFF",
 					fg=LABEL_COLOR, font=DIGITS_FONT_STYLE, borderwidth=0, command=lambda x = digit: [self.add_to_expression(x),button_list.remove(button_3),button_3.destroy()])
 					button_3.grid(row=grid_value[0], column=grid_value[1], sticky=tk.NSEW)
 					button_list.append(button_3)
-					print(len(button_list))
+					#print(len(button_list)) for checking
 				if(grid_value[1] == 4):
 					button_4 = tk.Button(self.buttons_frame, text=str(digit), bg="#FFFFFF",
 					fg=LABEL_COLOR, font=DIGITS_FONT_STYLE, borderwidth=0, command=lambda x = digit: [self.add_to_expression(x),button_list.remove(button_4),button_4.destroy()])
 					button_4.grid(row=grid_value[0], column=grid_value[1], sticky=tk.NSEW)
 					button_list.append(button_4)
-					print(len(button_list))
+					#print(len(button_list)) for checking
 
 	def append_operator(self, operator):
 		print("operator")
@@ -140,7 +140,7 @@ class Display:
 		for i in button_list:
 			i.destroy()
 		button_list.clear()
-		print("new : ",len(button_list))
+		#print("new : ",len(button_list)) [[for checking]]
 		self.create_digit_buttons()
 
 	def create_clear_button(self):
@@ -156,14 +156,14 @@ class Display:
 			print("YOU WIN")
 			global count_round
 			count_round += 1
-			self.point.config(text = count_round)
+			self.point.config(text = "Point : "+count_round)
 			global number_lis
 			number_list.clear()
 			client.sendall(str(len(number_list)).encode())
 			for i in range(4):
 				number_rev = client.recv(1024).decode()
 				number_list.append(number_rev)
-				print("num rev ", number_rev)
+				print("num rev :", number_rev)
 			self.digits = {int(number_list[0]): (1, 1), int(number_list[1]): (1, 2), int(number_list[2]): (1, 3), int(number_list[3]): (1, 4)}
 			self.clear()
 		else :
@@ -192,7 +192,7 @@ class Display:
 		for i in range(4):
 			number_rev = client.recv(1024).decode()
 			number_list.append(number_rev)
-			print("num rev ", number_rev)
+			print("num rev :", number_rev)
 		self.digits = {int(number_list[0]): (1, 1), int(number_list[1]): (1, 2), int(number_list[2]): (1, 3), int(number_list[3]): (1, 4)}
 		self.clear()
 		
@@ -211,9 +211,10 @@ class Display:
 if __name__ == "__main__":
 	with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as client:
 		client.connect((HOST, PORT))
+		print("Server Connected")
 		for i in range(4):
 			number_rev = client.recv(1024).decode()
 			number_list.append(number_rev)
-			print("num rev ", number_rev)
+			print("num rev :", number_rev)
 		client_display = Display()
 		client_display.run()
